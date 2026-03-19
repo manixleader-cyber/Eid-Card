@@ -8,25 +8,36 @@
 body {
   margin:0;
   font-family: Arial;
-  background: radial-gradient(circle, #0f2027, #203a43, #2c5364);
+  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
   color:white;
   text-align:center;
   overflow:hidden;
 }
 
-/* Slides */
+/* Glass card */
 .slide {
   display:none;
   height:100vh;
   justify-content:center;
   align-items:center;
   flex-direction:column;
-  position:relative;
-  z-index:2;
 }
 
 .active {
   display:flex;
+  animation: fade 1s;
+}
+
+@keyframes fade {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+
+.card {
+  background: rgba(255,255,255,0.1);
+  padding:30px;
+  border-radius:20px;
+  backdrop-filter: blur(10px);
 }
 
 /* Text */
@@ -38,12 +49,11 @@ h1 {
 /* Buttons */
 button {
   padding:12px 25px;
-  margin-top:20px;
+  margin:10px;
   background:gold;
   border:none;
   cursor:pointer;
   border-radius:10px;
-  font-size:16px;
 }
 
 /* Input */
@@ -51,104 +61,175 @@ input {
   padding:12px;
   border-radius:10px;
   border:none;
-  font-size:16px;
 }
 
-/* Stars background */
-.stars {
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  z-index:0;
-  pointer-events:none;
+/* Moon */
+.moon {
+  position:absolute;
+  top:50px;
+  right:50px;
+  width:80px;
+  height:80px;
+  background: radial-gradient(circle, #fff, #ccc);
+  border-radius:50%;
+  box-shadow:0 0 30px white;
+  animation: float 4s infinite alternate;
 }
 
+@keyframes float {
+  from {transform:translateY(0);}
+  to {transform:translateY(20px);}
+}
+
+/* Stars */
 .star {
   position:absolute;
   width:2px;
   height:2px;
   background:white;
-  animation:blink 2s infinite;
+  animation: blink 2s infinite;
 }
 
 @keyframes blink {
   0%,100% {opacity:0;}
   50% {opacity:1;}
 }
+
+/* Fireworks */
+.firework {
+  position:absolute;
+  width:5px;
+  height:5px;
+  background:gold;
+  border-radius:50%;
+  animation: explode 1s ease-out forwards;
+}
+
+@keyframes explode {
+  to {
+    transform:translate(var(--x), var(--y));
+    opacity:0;
+  }
+}
 </style>
 </head>
 
 <body>
 
-<!-- Stars -->
-<div class="stars" id="stars"></div>
+<div class="moon"></div>
+
+<!-- Music -->
+<audio id="music" autoplay loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+</audio>
 
 <!-- Slide 1 -->
 <div class="slide active">
+<div class="card">
   <h1>Enter Your Name 👤</h1>
   <input id="name" placeholder="Your Name">
-  <button onclick="nextSlide()">Start</button>
+  <button onclick="next()">Start</button>
+</div>
 </div>
 
-<!-- Slide 2 -->
-<div class="slide">
-  <h1>How much do you love your friends? ❤️</h1>
-  <button onclick="nextSlide()">A Lot 😍</button>
-</div>
+<!-- Slides -->
+<div class="slide"><div class="card">
+<h1>How strong is our friendship? 💖</h1>
+<button onclick="next()">Unbreakable 🔥</button>
+<button onclick="next()">Forever 💯</button>
+</div></div>
 
-<!-- Slide 3 -->
-<div class="slide">
-  <h1>Best memory together? 😄</h1>
-  <button onclick="nextSlide()">Many 😎</button>
-</div>
+<div class="slide"><div class="card">
+<h1>Best memory? 😄</h1>
+<button onclick="next()">Funny 😂</button>
+<button onclick="next()">All ❤️</button>
+</div></div>
 
-<!-- Slide 4 -->
-<div class="slide">
-  <h1>Are you always there for your friends? 🤝</h1>
-  <button onclick="nextSlide()">Yes 💯</button>
-</div>
+<div class="slide"><div class="card">
+<h1>Will you support me? 🤝</h1>
+<button onclick="next()">Yes 💯</button>
+<button onmouseover="moveNo(this)">No 😂</button>
+</div></div>
 
-<!-- Slide 5 -->
-<div class="slide">
-  <h1>Ready for a surprise? 🎁</h1>
-  <button onclick="nextSlide()">Yes 😍</button>
-</div>
+<div class="slide"><div class="card">
+<h1>Miss me? 🥺</h1>
+<button onclick="next()">Yes 😍</button>
+<button onclick="next()">Always ❤️</button>
+</div></div>
 
-<!-- Final Slide -->
+<div class="slide"><div class="card">
+<h1>Best friend? 😎</h1>
+<button onclick="next()">You ❤️</button>
+<button onclick="next()">Only You 😍</button>
+</div></div>
+
+<div class="slide"><div class="card">
+<h1>Stay forever? 🤗</h1>
+<button onclick="next()">Yes 💯</button>
+<button onmouseover="moveNo(this)">No 😂</button>
+</div></div>
+
+<div class="slide"><div class="card">
+<h1>Ready for surprise? 🎁</h1>
+<button onclick="next()">Yes 😍</button>
+</div></div>
+
+<!-- Final -->
 <div class="slide">
-  <h1 id="finalText"></h1>
-  <p style="font-size:25px;">Eid Mubarak 🌙✨</p>
+<div class="card">
+<h1 id="finalText"></h1>
+<p>
+Eid Mubarak 🌙✨ <br><br>
+May Allah bless you with happiness 💖 <br>
+You are my best friend 🤗 <br>
+Stay happy always 💫
+</p>
+</div>
 </div>
 
 <script>
-let current = 0;
-const slides = document.querySelectorAll(".slide");
+let current=0;
+const slides=document.querySelectorAll(".slide");
 
-function nextSlide() {
+function next(){
   slides[current].classList.remove("active");
   current++;
+  slides[current].classList.add("active");
 
-  if(current < slides.length){
-    slides[current].classList.add("active");
-  }
-
-  // Final message
-  if(current === slides.length - 1){
-    let name = document.getElementById("name").value || "Friend";
-    document.getElementById("finalText").innerText =
-      "Eid Mubarak " + name + " 🎉";
+  if(current===slides.length-1){
+    let name=document.getElementById("name").value || "Friend";
+    document.getElementById("finalText").innerText="Eid Mubarak "+name+" 🎉";
+    fireworks();
   }
 }
 
-// Stars animation
-for(let i=0;i<120;i++){
-  let star = document.createElement("div");
-  star.className="star";
-  star.style.top=Math.random()*100+"%";
-  star.style.left=Math.random()*100+"%";
-  document.getElementById("stars").appendChild(star);
+function moveNo(btn){
+  btn.style.position="absolute";
+  btn.style.top=Math.random()*80+"%";
+  btn.style.left=Math.random()*80+"%";
+}
+
+/* Stars */
+for(let i=0;i<100;i++){
+  let s=document.createElement("div");
+  s.className="star";
+  s.style.top=Math.random()*100+"%";
+  s.style.left=Math.random()*100+"%";
+  document.body.appendChild(s);
+}
+
+/* Fireworks */
+function fireworks(){
+  for(let i=0;i<50;i++){
+    let f=document.createElement("div");
+    f.className="firework";
+    f.style.top="50%";
+    f.style.left="50%";
+    f.style.setProperty('--x',(Math.random()-0.5)*500+"px");
+    f.style.setProperty('--y',(Math.random()-0.5)*500+"px");
+    document.body.appendChild(f);
+    setTimeout(()=>f.remove(),1000);
+  }
 }
 </script>
 
